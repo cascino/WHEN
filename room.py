@@ -1,4 +1,6 @@
 from random import *
+from roomtypes import *
+
 class room:
   def __init__(self,xPos,yPos):
     
