@@ -36,20 +36,7 @@ class room:
   def getType(self):
     return(self.roomtype,self.biometype)
 
-  def displayRoom(self):
-    window = GraphWin("Encounter!",520,520)
-    window.setCoords(-50,-50,50,50)
-    img = Image(Point(0,10),"assets/backgrounds/background.png").draw(window)
-
-
-
-    
-    for i in range(8):
-      if i == 5:
-        img = Image(Point(0,10),"assets/sprites/grass6.png").draw(window)
-        img = Image(Point(0,10),"assets/sprites/{0}{1}.png".format(self.roomtype,i+1)).draw(window)
-      else:
-        img = Image(Point(0,10),"assets/sprites/{0}{1}.png".format(self.biometype,i+1)).draw(window)
+  
     
     
     

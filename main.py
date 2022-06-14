@@ -84,12 +84,10 @@ def genMap():
     k = previousSquares.index(tuple(pos))
     
     if viewRoom.clicked(point):
-      squareList[k].displayRoom()
-      
-      
-      
-      
-      
+      w,z = squareList[k].getType()
+      displayRoom(w,z)
+
+    
     for i in range(len(buttons)):
       if buttons[i].clicked(point):
         j[0] = buttons[i].getLabel()
@@ -111,7 +109,7 @@ def genMap():
           pos[0] = pos[0] - x
           pos[1] = pos[1] - y
         
-    point = name.getMouse()  
+    point = name.getMouse()
   
 
 #Move the "cursor"
@@ -126,6 +124,30 @@ def shift(currentPos,list):
     return 4,0
 
 
+def displayRoom(r,b):
+  name, val = windowMake("Encounter!",windowList,leaves)
+  options = ["Left","Ahead","Back","Left","Interect","View Map"]
+  img = Image(Point(0,12),"assets/backgrounds/background.png").draw(name)
+  for i in range(8):
+    if i == 5:
+      img = Image(Point(0,12),"assets/sprites/grass6.png").draw(name)
+      img = Image(Point(0,12),"assets/sprites/{0}{1}.png".format(r,i+1)).draw(name)
+    else:
+     img = Image(Point(0,12),"assets/sprites/{0}{1}.png".format(b,i+1)).draw(name)
+  for i in range(len(options)):
+    options[i] = Button(name,Point(-40+i*16,-45),15,5,options[i])
+    options[i].activate()
+      
+  k = True
+  point = name.getMouse()
+  while k == True:
+    for i in range(len(options)):
+      if options[i].clicked(point):
+        if i < 4:
+          name.close()
+          return options[i].getLabel()
+          
+    point = name.getMouse()
 
 
 genMap()
