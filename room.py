@@ -1,5 +1,6 @@
 from random import *
 from roomtypes import *
+from graphics import *
 
 class room:
   def __init__(self,xPos,yPos):
@@ -25,12 +26,31 @@ class room:
     return self.xPos,self.yPos
 
   def roomassign(self):
-    roomList = ["a","b","c","d","e","f","g"]
+    roomList = ["house","chest",]
+    biomeList = ["grass","tree","ruin","water",]
     randroom = randint(0,len(roomList)-1)
+    randbiome = randint(0,len(biomeList)-1)
     self.roomtype = roomList[randroom]
+    self.biometype = biomeList[randbiome]
 
   def getType(self):
-    return(self.roomtype)
+    return(self.roomtype,self.biometype)
+
+  def displayRoom(self):
+    window = GraphWin("Encounter!",520,520)
+    window.setCoords(-50,-50,50,50)
+    img = Image(Point(0,10),"assets/backgrounds/background.png").draw(window)
+
+
+
+    
+    for i in range(8):
+      if i == 5:
+        img = Image(Point(0,10),"assets/sprites/grass6.png").draw(window)
+        img = Image(Point(0,10),"assets/sprites/{0}{1}.png".format(self.roomtype,i+1)).draw(window)
+      else:
+        img = Image(Point(0,10),"assets/sprites/{0}{1}.png".format(self.biometype,i+1)).draw(window)
+    
     
     
 

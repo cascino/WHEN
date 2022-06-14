@@ -7,6 +7,7 @@ from roomtypes import *
 def menu():
   name, val = windowMake("Main Menu",windowList,leaves)
   leaves[val].deactivate()
+  zoneGraphic(name,"tree","house")
   entry = ["Play","Keyboards","Modes","Difficulty","Lists","Leaderboard","HowTo"]
   buttons = ["Play","Keyboards","Modes","Difficulty","Lists","Leaderboard","HowTo"]
   massButtoner(entry,name)
@@ -22,9 +23,9 @@ def menu():
 
 def gameWindow():
   name, val = windowMake("View Options",windowList,leaves)
-  viewActions = ["View Map","View Inventory","Help",]
-  buttons = ["View Map","View Inventory","Help",]
-  #massButtoner(entry,name)
+  viewActions = ["View Map","Inventory","Help",]
+  buttons = ["View Map","Inventory","Help",]
+  massButtoner(viewActions,name)
   
 def genMap():
   name, val = windowMake("Map of Forest",windowList,leaves)
@@ -35,6 +36,10 @@ def genMap():
   l = Rectangle(Point(1,1),Point(-1,-1))
   l.setFill("black")
 
+
+  viewRoom = Button(name,Point(40,0),10,4,"View")
+  viewRoom.activate()
+  
   #Button list 
   buttons = ["Up","Down","Left","Right"]
   for i in range(len(buttons)):
@@ -56,13 +61,16 @@ def genMap():
     newx,newy = previousSquares[i]
     squareList[i] = room(newx,newy)
     squareList[i].roomassign()
-    squareList[i].getType()
+    r,c = squareList[i].getType()
+    
+
+    
     
     j = Rectangle(Point(newx-2,newy-2),Point(newx+2,newy+2))
-    colours = ["red","green","blue","yellow","orange","purple","white"]
-    strings = "abcdefg"
-
-    j.setFill(colours[strings.index(squareList[i].getType())])
+    colours = ["green","green","yellow","blue"]
+    biomes = ["grass","tree","ruin","water"]
+    co = biomes.index(c)
+    j.setFill(colours[co])
     j.draw(name)
     
   cP = [0,0]
@@ -73,26 +81,36 @@ def genMap():
   j = ["Up"]
   point = name.getMouse()
   while flag == True:
+    k = previousSquares.index(tuple(pos))
     
+    if viewRoom.clicked(point):
+      squareList[k].displayRoom()
+      
+      
+      
+      
+      
     for i in range(len(buttons)):
       if buttons[i].clicked(point):
         j[0] = buttons[i].getLabel()
         
-    x,y = shift(cP,j)
-    cP[0] = x
-    cP[1] = y
-    pos[0] = pos[0] + x
-    pos[1] = pos[1] + y
-    
-    if tuple(pos) in previousSquares:
-      l.move(x,y)
-      #Debugging line for info
-      print(squareList[previousSquares.index(tuple(pos))].getType())
-      print(squareList[previousSquares.index(tuple(pos))].getCoords())
-    else:
-      #Moving the cursor backwards
-      pos[0] = pos[0] - x
-      pos[1] = pos[1] - y
+        x,y = shift(cP,j)
+        cP[0] = x
+        cP[1] = y
+        pos[0] = pos[0] + x
+        pos[1] = pos[1] + y
+        
+        if tuple(pos) in previousSquares:
+          l.move(x,y)
+          #Debugging line for info
+          print(squareList[previousSquares.index(tuple(pos))].getType())
+          print(squareList[previousSquares.index(tuple(pos))].getCoords())
+          #print("Index is",previousSquares.index(tuple(pos)))
+        else:
+          #Moving the cursor backwards
+          pos[0] = pos[0] - x
+          pos[1] = pos[1] - y
+        
     point = name.getMouse()  
   
 
@@ -109,7 +127,9 @@ def shift(currentPos,list):
 
 
 
-  
+
+genMap()
+
 functionList = []
 windowList = []
 leaves = []
