@@ -1,5 +1,4 @@
 from random import *
-from roomtypes import *
 from graphics import *
 
 class room:
@@ -13,8 +12,8 @@ class room:
     a = self.xPos
     b = self.yPos
     
-    rbin = [0,2]
-    rmove = [-2,2]
+    rbin = [0,1]
+    rmove = [-1,1]
     shuffle(rbin)
     shuffle(rmove)
     newList = [int(rbin[0])*rmove[0],rbin[1]*rmove[1]]
@@ -26,7 +25,7 @@ class room:
     return self.xPos,self.yPos
 
   def roomassign(self):
-    roomList = ["house","chest",]
+    roomList = ["house","chest","grass","tree"]
     biomeList = ["grass","tree","ruin","water",]
     randroom = randint(0,len(roomList)-1)
     randbiome = randint(0,len(biomeList)-1)

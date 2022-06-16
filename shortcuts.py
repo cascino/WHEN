@@ -9,14 +9,13 @@ def windowMake(windowName,list,leaves):
   val = list.index(windowName)
   list[val] = GraphWin(windowName,520,520)
   list[val].setCoords(-50,-50,50,50)
-  list[val].setBackground("grey")
   leaves[lval] = Button(list[val],Point(-40,40),10,4,"Menu")
   leaves[lval].activate()
   return list[val], val
 
 def massButtoner(list,win):
   for i in range(len(list)):
-    list[i] = Button(win,Point(0,40-i*10),20,4,list[i])
+    list[i] = Button(win,Point(0,10-i*10),20,4,list[i])
     list[i].activate()
 
 def prefWriteLoop(list,win,val,file,leaves):
