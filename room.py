@@ -7,6 +7,7 @@ class room:
     self.xPos = xPos
     self.yPos = yPos
     self.roomtype = "z"
+    self.beenBool = False
     
   def adjacent(self):
     a = self.xPos
@@ -34,6 +35,15 @@ class room:
 
   def getType(self):
     return(self.roomtype,self.biometype)
+
+  def beenHere(self):
+    return self.beenBool
+
+  def been(self):
+    self.beenBool = True
+
+  def assignhome(self):
+    self.roomtype = "home"
 
   
     
