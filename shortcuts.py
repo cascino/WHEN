@@ -1,7 +1,7 @@
 from graphics import *
 from button import *
 
-
+#creates a window and a leave button
 def windowMake(windowName,list,leaves):
   
   list.append(windowName)
@@ -22,6 +22,7 @@ def windowMake(windowName,list,leaves):
   
   return list[val], val
 
+#creates a bunch of buttons based on a list all at once
 def massButtoner(list,win):
 
   bg = Image(Point(0,0),"assets/backgrounds/bg.png").draw(win)
@@ -33,6 +34,7 @@ def massButtoner(list,win):
     list[i] = Button(win,Point(0,10-i*10),30,5,list[i])
     list[i].activate()
 
+#writes a preference to a file
 def prefWriteLoop(list,win,val,file,leaves):
   point = Point(-50,-50)
   while not leaves[val].clicked(point):

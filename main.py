@@ -16,13 +16,16 @@ turnCounter = [0]
 cP = [0,0]
 pos = [0,0]
 
-#main menu function. I used the getlabel index in combination wit
+#def menu(): main menu function. I created a list of functions at the bottom of the file to call from, based on the index of the label of the button that a user clicked. This way, I forwent long conditional statements. 
 def menu():
+  
+  
   startScore[0] = 0
   
   name = GraphWin("Main Menu",520,520)
   
   name.setCoords(-50,-50,50,50)
+
   
   entry = ["Begin Adventure!","Keyboards","Adventure Size","Difficulty","Lists","Leaderboard"]
   
@@ -46,7 +49,8 @@ def menu():
         menu()
         
     point = name.getMouse()
-
+  
+#def Keyboards():This function pulls up a screen where users can select their desired keyboard layout. I used my massButtoner function to create buttons from a list.
 def Keyboards():
   
   name,val = windowMake("Keyboard Selection",windowList,leaves)
@@ -60,8 +64,10 @@ def Keyboards():
   name.close()
 
   return
-
+  
+#def Modes():This function pulls up a screen where users can select their desired adventure size. I used my massButtoner function to create buttons to select from a list.
 def Modes():
+  
   name, val = windowMake("Map Size",windowList,leaves)
   
   modes = ["Small","Medium","Large","Extra Large","Huge"]
@@ -74,6 +80,7 @@ def Modes():
   
   return
 
+#def keyboard(): This function creates pretty looking keyboards. It iterates through the list of letters in the order from the keyboards file and creates rows based on specified row length.
 def keyboard(keytype,win,keylist):
   
   for i in range(10):
@@ -94,8 +101,9 @@ def keyboard(keytype,win,keylist):
     
     keylist[i].activate()
 
+#def Difficulty(): This function pulls up a window for users to select the difficulty from.
 def Difficulty():
-  
+   
   name, val = windowMake("Difficulty",windowList,leaves)
   
   difficulties = ["Beginner","Intermediate","Advanced","Expert","Prophet"]
@@ -108,11 +116,12 @@ def Difficulty():
   
   return
   
+#def Lists(): This function pulls up a window for users to select their word list from. 
 def Lists():
   
   name, val= windowMake("Word Lists",windowList,leaves)
   
-  words = ["Countries","Pets","Foods","Sports"]
+  words = ["Countries","Pets","Cities","Pets"]
   
   massButtoner(words,name)
   
@@ -121,9 +130,10 @@ def Lists():
   name.close()
   
   return
-
+  
+#def Play():This function creates the list of rooms that the game will be played in.
 def Play():
-  #Generating the list of squareList
+  
   file = open("preferences/modes.txt")    
   
   lfile = int(file.read())
@@ -143,7 +153,7 @@ def Play():
       
       previousSquares.append(w)
   
-  #remaking squareList with valid previousSquares list
+  
   for i in range(len(previousSquares)):
     
     newx,newy = previousSquares[i]
@@ -160,7 +170,6 @@ def Play():
   
   viewMap()
 
-  #direction = "Down"
   
   while True:
     
@@ -199,7 +208,8 @@ def Play():
     
       
   return 
-#Move the "cursor"
+  
+#def shift(): this function accepts the current position and direction in which the cursor representing the player will move in.
 def shift(currentPos,list):
   
   if list == "Up":
@@ -222,6 +232,7 @@ def shift(currentPos,list):
     
     return 0,0
 
+#def backGroundDraw(): this function draws the background based on the parameters of the room such as the biome and room type
 def backGroundDraw(r,b,win):
 
   bg = Image(Point(0,12),"assets/backgrounds/background.png").draw(win)
@@ -236,7 +247,8 @@ def backGroundDraw(r,b,win):
     else:
       
      img = Image(Point(0,12),"assets/sprites/{0}{1}.png".format(b,i+1)).draw(win)
-      
+
+#def displayRoom(): This function displays the current room as well as some buttons for the user to interact with. This is how the user will move around the map and interact with hangman puzzle opportunities. Returns the direction that the player will move in, if any.
 def displayRoom(currentRoom):
 
   r,b = currentRoom.getType()
@@ -361,10 +373,11 @@ def displayRoom(currentRoom):
     return "None"
 
   else:
-    #displayRoom(currentRoom)
+    
     name.close()
     return "Back"
-  
+
+#def viewMap(): this function displays the map layout based on the list of rooms that were generated. also contains a how to button that calls the how to function.
 def viewMap():
   
   name, val = windowMake("Map Layout",windowList,leaves)
@@ -410,7 +423,7 @@ def viewMap():
   name.close()
   
   return
-  
+#def interaction(): this function handles the actual hangman puzzle gameplay and puts together the hangman functions from hangmethods.py
 def interaction(r,b):
   name, val = windowMake(r+" encounter!",windowList,leaves)
 
@@ -545,7 +558,7 @@ def interaction(r,b):
   name.close()
   
   return score
-
+#def catmove(): this function handles moving the cat around for the cat animation. Takes the difference in the point's x and y values and splits it into 10 frames, moving the cat each time by drawing and undrawing cat sprites. It also cycles through a walking animation.
 def catmove(start,win,point,inter):
   cx = start.getX()
   cy = start.getY()
@@ -553,7 +566,6 @@ def catmove(start,win,point,inter):
   dx = point.getX() - cx
   dy = point.getY() - cy
 
-  
   for i in range(10):
     
     catList = Image(Point(cx+dx*i/10,cy+dy*i/10),"assets/sprites/miao{0}.png".format(int(i%4+inter)))
@@ -563,7 +575,8 @@ def catmove(start,win,point,inter):
     sleep(0.1)
     
     catList.undraw()
-    
+
+#def winscreen(): the screen that a player will see when they complete a hangman puzzle successfully. also contains a little animation
 def winScreen(score):
   
   name, val = windowMake("You solved the puzzle!",windowList,leaves)
@@ -616,7 +629,7 @@ def winScreen(score):
   
   return
     
-
+#def loseScreen(): the screen that a player will see when they do not successfully complete a hangman puzzle. also contains a little animation
 def loseScreen(score,word):
   
   name, val = windowMake("You did not solve the puzzle!",windowList,leaves)
@@ -662,6 +675,7 @@ def loseScreen(score,word):
   
   return
 
+#def cleanUp(): this function cleans up the lists of rooms and player data from the current adventure, making it clean for the next adventure.
 def cleanUp():
   
   squareList.clear()
@@ -676,6 +690,7 @@ def cleanUp():
   
   cP[0],cP[1] = 0,0
 
+#def finalWinScreen(): this function is the final screen that a player sees once they have reached herberts home.
 def finalWinScreen(score):
   
   name, val = windowMake("Herbert Found His Home!",windowList,leaves)
@@ -728,6 +743,7 @@ def finalWinScreen(score):
   
   writeLeaderBoard(score)
 
+#def howTo(): text that outlines how the player should play. pulls up a separate window from the viewmap screen.
 def howTo():
   
   name, val = windowMake("How To!",windowList,leaves)
@@ -742,6 +758,7 @@ def howTo():
 
   name.close()
 
+#def viewLeaderBoard(): pulls up the leaderboard from the leaderboard file and also sorts it to show the top scoring usernames
 def viewLeaderBoard():
   file = open("leaderboard.txt","r")
   listFile = file.readlines()
@@ -783,6 +800,7 @@ def viewLeaderBoard():
   name.close()
   file.close()
   return
+#def writeLeaderBoard(): a function that writes the users username and their score to the leaderboard.
 def writeLeaderBoard(score):
 
   file = open("leaderboard.txt","a")
@@ -837,6 +855,7 @@ def writeLeaderBoard(score):
   keySel.close()
   return
 
+#def leaveCheck(): a function that asks the user if they are sure if they want to leave the game through either the quit button or going to herberts home.
 def leaveCheck():
 
   name, val = windowMake("Enter Your Name",windowList,leaves)
