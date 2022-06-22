@@ -11,24 +11,22 @@ colours = ["green","green","yellow","blue","magenta"]
 biomes = ["grass","tree","ruin","water","home"]
 biomeNames = ["plains","forest","ruins","lake"]
 startScore = [0]
+turnCounter = [0]
 
 cP = [0,0]
 pos = [0,0]
-  
+
+#main menu function. I used the getlabel index in combination wit
 def menu():
   startScore[0] = 0
-  
-  previousSquares = [(0,0)]
   
   name = GraphWin("Main Menu",520,520)
   
   name.setCoords(-50,-50,50,50)
   
-  bg = Image(Point(0,0),"assets/backgrounds/bg.png").draw(name)
+  entry = ["Begin Adventure!","Keyboards","Adventure Size","Difficulty","Lists","Leaderboard"]
   
-  entry = ["Begin Adventure!","Keyboards","Adventure Size","Difficulty","Lists"]
-  
-  buttons = ["Begin Adventure!","Keyboards","Adventure Size","Difficulty","Lists"]
+  buttons = ["Begin Adventure!","Keyboards","Adventure Size","Difficulty","Lists","Leaderboard"]
   
   massButtoner(entry,name)
   
@@ -43,10 +41,9 @@ def menu():
         x = buttons.index(entry[i].getLabel())
         
         name.close()
-        
-        print(x)
-        
+                
         functionList[x]()
+        menu()
         
     point = name.getMouse()
 
@@ -61,9 +58,7 @@ def Keyboards():
   prefWriteLoop(keyboard,name,val,"preferences/selectedKey.txt",leaves)
   
   name.close()
-  
-  menu()
-  
+
   return
 
 def Modes():
@@ -76,8 +71,6 @@ def Modes():
   prefWriteLoop(modes,name,val,"preferences/modes.txt",leaves)
   
   name.close()
-  
-  menu()
   
   return
 
@@ -113,15 +106,13 @@ def Difficulty():
   
   name.close()
   
-  menu()
-  
   return
   
 def Lists():
   
   name, val= windowMake("Word Lists",windowList,leaves)
   
-  words = ["Countries","Pets","Foods","League"]
+  words = ["Countries","Pets","Foods","Sports"]
   
   massButtoner(words,name)
   
@@ -129,17 +120,14 @@ def Lists():
   
   name.close()
   
-  menu()
-  
   return
 
 def Play():
   #Generating the list of squareList
-  file = open("preferences/modes.txt")
+  file = open("preferences/modes.txt")    
   
   lfile = int(file.read())
-  
-  squareList = [room(0,0)]
+
   
   for i in range(1,(lfile+1)*10):
     
@@ -169,7 +157,10 @@ def Play():
   
   squareList[len(previousSquares)-1].assignhome()
   
+  
   viewMap()
+
+  #direction = "Down"
   
   while True:
     
@@ -180,25 +171,34 @@ def Play():
     if direction == "None":
       
       return  
-    
-    x,y = shift(cP,direction)
-    
-    cP[0] = x
-    
-    cP[1] = y
-    
-    pos[0] = pos[0] + x
-    
-    pos[1] = pos[1] + y
-        
-    if not (tuple(pos) in previousSquares):
-      
-      #Moving the cursor backwards
-      
+
+    elif direction == "Back":
       pos[0] = pos[0] - x
       
       pos[1] = pos[1] - y
+    
+    else:
+      x,y = shift(cP,direction)
+    
+      cP[0] = x
+    
+      cP[1] = y
+    
+      pos[0] = pos[0] + x
+    
+      pos[1] = pos[1] + y
         
+      if not (tuple(pos) in previousSquares):
+      
+        #Moving the cursor backwards
+      
+        pos[0] = pos[0] - x
+      
+        pos[1] = pos[1] - y
+
+    
+      
+  return 
 #Move the "cursor"
 def shift(currentPos,list):
   
@@ -223,9 +223,8 @@ def shift(currentPos,list):
     return 0,0
 
 def backGroundDraw(r,b,win):
-  
-  img = Image(Point(0,12),"assets/backgrounds/background.png").draw(win)
-  
+
+  bg = Image(Point(0,12),"assets/backgrounds/background.png").draw(win)
   for i in range(8):
     
     if i == 5:
@@ -239,16 +238,26 @@ def backGroundDraw(r,b,win):
      img = Image(Point(0,12),"assets/sprites/{0}{1}.png".format(b,i+1)).draw(win)
       
 def displayRoom(currentRoom):
-  
+
   r,b = currentRoom.getType()
 
+  if r == "home":
+
+    if leaveCheck() == True:
+      finalWinScreen(startScore[0])
+      return "None"
+      
+    else:
+      
+      return "Back"
+      
   beenBool = currentRoom.beenHere()
     
   name = GraphWin("Encounter!",520,520)
-  
+
   name.setCoords(-50,-50,50,50)
   
-  options = ["Left","Up","Down","Right","Interect","View Map"]
+  options = ["Left","Up","Down","Right","Interact","View Map"]
   
   backGroundDraw(r,b,name)
   
@@ -270,14 +279,11 @@ def displayRoom(currentRoom):
   
   mainMenu.activate()
 
-  
   textBox = Rectangle(Point(-45,-40),Point(45,-25))
   
   textBox.setFill("beige")
   
   textBox.draw(name)
-
-  disScore = Text(Point(40,40),"Your current score is:")
   
   catter = Image(Point(-40,-20),"assets/sprites/miao19.png")
   
@@ -304,9 +310,20 @@ def displayRoom(currentRoom):
     catTalk = Text(Point(0,-33),"This is a {0} in the {1}! Miao Miao\n You cant get coins from this {0}".format(r,biomeNames[rVal]))
 
   catTalk.draw(name)
+
+  
+  currentScore = Text(Point(38,45),"Score: {0}".format(startScore[0]))
+  currentScore.setFill('white')
+  
+  currentScore.draw(name)
+  turns = Text(Point(38,40),"Turns: {0}".format(turnCounter[0]))
+  turns.setFill('white')
+  
+  
+  turns.draw(name)
   
   point = name.getMouse()
-  
+    
   while not mainMenu.clicked(point):
     
     for i in range(len(options)):
@@ -316,6 +333,8 @@ def displayRoom(currentRoom):
         if i < 4: 
           
           name.close()
+
+          turnCounter[0] = turnCounter[0] + 1
           
           return options[i].getLabel()
           
@@ -332,17 +351,25 @@ def displayRoom(currentRoom):
           options[i].deactivate()
           
     point = name.getMouse()
-  
-  name.close()
-  
-  menu()
-  
-  return "None"
+  if leaveCheck() == True:
+    cleanUp()
     
+    name.close()
+  
+    menu()
+  
+    return "None"
+
+  else:
+    #displayRoom(currentRoom)
+    name.close()
+    return "Back"
+  
 def viewMap():
+  
   name, val = windowMake("Map Layout",windowList,leaves)
 
-  MapText = Text(Point(0,30),"Here is the layout for your adventure:").draw(name)
+  MapText = Text(Point(0,40),"Here is the layout for your adventure:").draw(name)
   
   for i in range(len(previousSquares)):
     
@@ -359,7 +386,9 @@ def viewMap():
     if squareList[i].beenHere() == True:
       
       j.setFill("grey")
-    
+
+    elif squareList[i].getType()[0] == "home":
+      j.setFill("magenta")
     j.draw(name)
     
   currentSquare = Circle(Point(4*pos[0],4*pos[1]),1)
@@ -367,11 +396,15 @@ def viewMap():
   currentSquare.setFill("orange")
   
   currentSquare.draw(name)
+
+  howButton = Button(name,Point(-40,30),15,5,"How to")
+  howButton.activate()
   
   point = name.getMouse()
   
   while (not leaves[val].clicked(point)):
-    
+    if howButton.clicked(point):
+      howTo()
     point = name.getMouse()
     
   name.close()
@@ -402,28 +435,43 @@ def interaction(r,b):
   word = hangWord("categories/"+words[wordInd]+".txt")
 
   score = 0
+  
   errors = 0
+  
   puzzle = hangPuzzle(word)
+  
   rect = Rectangle(Point(-40,7),Point(40,0))
+  
   rect.setFill("grey")
+  
   rect.draw(name)
+  
   j = hangDraw(name,puzzle)
+  
   e = errorDraw(name,errors)
+  
   s = sDraw(name,score)
 
   miao = Image(Point(-40,-20),"assets/sprites/miao19.png")
+  
   miao.draw(name)
+  
   happy = Image(Point(0,30),"assets/sprites/miao21.png")
   
   keylist = []  
   
   for i in range(27):
+    
     keylist.append("key" + str(i))
+    
   keyboard(keytype,name,keylist)
 
   while (errors < (5-lfile)) and ("".join(puzzle[0:-1]) != word[0:-1]):
+    
     point = name.getMouse()
+    
     for i in range(26):
+      
       if keylist[i].clicked(point):
         
         guess = keylist[i].getLabel()
@@ -463,29 +511,40 @@ def interaction(r,b):
         
 
       j.setText("".join(puzzle))
+      
       e.setText("Errors:"+str(errors))
+      
       s.setText("Score:"+str(score))
       
-  
   if errors >= (5-lfile):
+    
     for i in range(6):
+      
       sleep(0.1)
+      
       miao.move(2*(-1) ** i,0)
+      
     loseScreen(score,word)
+    
   else:
+    
     for i in range(6):
+      
       sleep(0.1)
+      
       miao.move(0,2*(-1) ** i)
+      
     winScreen(score)
       
-  
   keySel.close()
+  
   listType.close()
+  
   keyboards.close()
+  
   name.close()
   
   return score
-
 
 def catmove(start,win,point,inter):
   cx = start.getX()
@@ -602,9 +661,218 @@ def loseScreen(score,word):
   name.close()
   
   return
+
+def cleanUp():
   
-functionList = [Play,Keyboards,Modes,Difficulty,Lists]
+  squareList.clear()
+  
+  previousSquares.clear()
+  
+  squareList.append(room(0,0))
+  
+  previousSquares.append((0,0))
+  
+  pos[0],pos[1] = 0,0
+  
+  cP[0],cP[1] = 0,0
+
+def finalWinScreen(score):
+  
+  name, val = windowMake("Herbert Found His Home!",windowList,leaves)
+  
+  bg = Image(Point(0,0),"assets/backgrounds/bg.png").draw(name)
+
+  textBox = Rectangle(Point(30,30),Point(-30,-30))
+  
+  textBox.setFill("white")
+  
+  textBox.draw(name)
+  
+  preText = Text(Point(0,10),"You found Herbert's Home!\n On this adventure,\n you have travelled to:\n {0} Regions!\n\n Your final score is:\n".format(turnCounter[0]))
+  
+  preText.setSize(15)
+  
+  preText.draw(name)
+
+  scoreText = Text(Point(0,-15),"{0} coins!".format(score))
+  
+  scoreText.setSize(15)
+  
+  scoreText.draw(name)
+  
+  for i in range(score):
+    
+    scoreText.setText("{0} coins!".format(0+i+1))
+    
+    if i > (score * 3 / 8):
+      catter = Image(Point(-25,-25),"assets/sprites/miao{0}.png".format(8-int(i/(score/8)%4)))
+      
+    else:
+      catter = Image(Point(-25,-25),"assets/sprites/miao{0}.png".format(28-int(i/(score/8)%4)))
+      
+    catter.draw(name)
+    
+    sleep(0.1)
+    
+    catter.undraw()
+    
+  catter = Image(Point(-25,-25),"assets/sprites/miao8.png").draw(name)
+  
+  ctc = Text(Point(0,-20),"Click anywhere to Continue")
+  
+  ctc.draw(name)
+  
+  point = name.getMouse()
+  
+  name.close()
+  
+  writeLeaderBoard(score)
+
+def howTo():
+  
+  name, val = windowMake("How To!",windowList,leaves)
+
+  instructions = Image(Point(0,30),"assets/backgrounds/instructions.png").draw(name)
+  howtext = Text(Point(0,0),"Your goal is to find Herbert's Home!\nUse the map to guide you towards the magenta square, which\n marks Herbert's Humble Abode! Yellow squares mark ruins,\n blue squares mark oceans and green squares mark plains.\n\n However, before returning home, Herbert would\n like to collect some coins!\n\nHelp Herbert solve chest and house puzzles to collect coins \nfor his coin collection! You may only collect coins from one \nregion once, and exhausted regions are marked as \ngrey on your map.").draw(name)
+
+  point = name.getMouse()
+  
+  while not leaves[val].clicked(point):
+    point = name.getMouse()
+
+  name.close()
+
+def viewLeaderBoard():
+  file = open("leaderboard.txt","r")
+  listFile = file.readlines()
+
+  
+  name, val = windowMake("View Leaderboard",windowList,leaves)
+  sorteds = []
+  scoreList = []
+  bg = Image(Point(0,0),"assets/backgrounds/bg.png").draw(name)
+  title = Image(Point(0,30),"assets/backgrounds/highScores.png").draw(name)
+  textBox = Rectangle(Point(30,20),Point(-30,-32))
+  
+  leaves[val].unMake()
+  leaves[val].reMake(name)
+  textBox.setFill("white")
+  
+  textBox.draw(name)
+  
+  for i in range(len(listFile)):
+    j = listFile[i].split("-")
+    
+    scoreList.append(int(j[1]))
+  newScores = sorted(scoreList)
+  
+  for i in range(len(newScores)):
+    k = scoreList.index(newScores[i])
+    sorteds.append(listFile[k])
+    listFile.remove(listFile[k])
+    scoreList.remove(newScores[i])
+    
+  for i in range(10):
+    scoreEntry = Text(Point(0,15-5*i),"{0}. {1}".format(i+1,sorteds[-i-1])).draw(name)
+
+  point = name.getMouse()
+
+  while not leaves[val].clicked(point):
+    point = name.getMouse()
+
+  name.close()
+  file.close()
+  return
+def writeLeaderBoard(score):
+
+  file = open("leaderboard.txt","a")
+
+  keyboards = open("preferences/keyboards.txt","r")
+
+  keySel = open("preferences/selectedKey.txt","r")
+  
+  name, val = windowMake("Enter Your Name",windowList,leaves)
+  
+  keytype = keyboards.readlines()[int(keySel.read())].split(",")
+  
+  username = ""
+
+  usernameDraw = Text(Point(0,0),username)
+  usernameDraw.draw(name)
+
+  keylist = []
+  
+  for i in range(27):
+    
+    keylist.append("key" + str(i))
+    
+  keyboard(keytype,name,keylist)
+
+  point = name.getMouse()
+  
+  while not leaves[val].clicked(point):
+    
+    for i in range(27):
+      
+      if keylist[i].clicked(point):
+
+        letter = keylist[i].getLabel()
+
+        if letter == "<":
+          
+          username = username[0:-2]
+          
+          usernameDraw.setText(username)
+        else:
+          
+          username = username + letter
+          
+          usernameDraw.setText(username)
+
+    point = name.getMouse()
+
+  file.write("{0}-{1}\n".format(username,score))
+  
+  keyboards.close()
+  keySel.close()
+  return
+
+def leaveCheck():
+
+  name, val = windowMake("Enter Your Name",windowList,leaves)
+  leaves[val].deactivate()
+  bg = Image(Point(0,0),"assets/backgrounds/bg.png").draw(name)
+  title = Image(Point(0,30),"assets/backgrounds/attention.png").draw(name)
+  
+  textBox = Rectangle(Point(30,20),Point(-30,-40))
+  
+  textBox.setFill("white")
+  
+  textBox.draw(name)
+
+  preText = Text(Point(0,10),"Are you sure you \nWant to terminate\n this adventure?\nHerbert wants more coins...")
+  preText.setSize(15)
+  preText.draw(name)
+
+  yesButton = Button(name,Point(20,-15),10,5,"Yes")
+  yesButton.activate()
+  noButton = Button(name,Point(-20,-15),10,5,"No")
+  noButton.activate()  
+
+  point = name.getMouse()
+  while True:
+    if yesButton.clicked(point):
+      name.close()
+      return True
+    elif noButton.clicked(point):
+      name.close()
+      return False
+    else:
+      point = name.getMouse()
+  
+functionList = [Play,Keyboards,Modes,Difficulty,Lists,viewLeaderBoard]
 windowList = []
 leaves = []
+
 
 menu()

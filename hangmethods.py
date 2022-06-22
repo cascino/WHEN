@@ -55,13 +55,14 @@ def hangDraw(win,puzzle):
   return(currentword)
 
 def errorDraw(win,errors):
-  eDraw = Text(Point(40,40),"Errors:"+str(errors))
-  #eDraw.setSize(20)
+  eDraw = Text(Point(38,40),"Errors:"+str(errors))
+  eDraw.setFill('white')
   eDraw.draw(win)
   return(eDraw)
 
 def sDraw(win,score):
-  sDraw = Text(Point(-40,40),"Score"+str(score))
-  #sDraw.setSize(20)
+  sDraw = Text(Point(38,45),"Score"+str(score))
+  sDraw.setFill('white')
   sDraw.draw(win)
   return(sDraw)
+

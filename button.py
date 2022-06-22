@@ -42,4 +42,9 @@ class Button:
     def unMake(self):
       self.label.undraw()
       self.rect.undraw()
+
+    def reMake(self,win):
+      self.rect.draw(win)
+      self.label.draw(win)
+      
     

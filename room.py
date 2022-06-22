@@ -6,6 +6,7 @@ class room:
     
     self.xPos = xPos
     self.yPos = yPos
+    
     self.roomtype = "z"
     self.beenBool = False
     
